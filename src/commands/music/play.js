@@ -65,7 +65,7 @@ module.exports = {
 
                 const playMusic = new MessageEmbed()
                     .setColor(client.embedColor)
-                    .setThumbnail(results.tracks[0].displayThumnail("hqdefault"))
+                    .setThumbnail(results.tracks[0].displayThumbnail("hqdefault"))
                     .setDescription(`${emojiaddsong} **Enqueuing song**\n [${results.tracks[0].title}](${results.tracks[0].uri}) - \`[${convertTime(results.tracks[0].duration)}]\``)
                     .setTimestamp()
 
