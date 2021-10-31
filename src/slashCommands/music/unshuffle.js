@@ -1,54 +1,59 @@
-const { MessageEmbed } = require(`discord.js`);
+const { MessageEmbed, CommandInteraction, Client } = require("discord.js")
 
 module.exports = {
     name: "unshuffle",
-    category: "Music",
-    description: "unshuffle the queue",
-    aliases: ["unmix"],
-    args: false,
-    usage: "",
-    permission: [],
+    description: "unshuffle queue",
     owner: false,
     player: true,
     inVoiceChannel: true,
     sameVoiceChannel: true,
-    execute: async (message, args, client, prefix) => {
-        const player = client.manager.get(message.guild.id);
+
+    /**
+     * 
+     * @param {Client} client 
+     * @param {CommandInteraction} interaction 
+     */
+
+    run: async (client, interaction) => {
+        await interaction.deferReply({
+            ephemeral: false
+        });
+        const player = client.manager.get(interaction.guildId);
         let response;
         if (!player) {
             response = new MessageEmbed()
                 .setColor("RED")
                 .setDescription("Ming mong, there is no player in this guild");
-            return message.channel.send({ embeds: [response] });
+            return interaction.editReply({ embeds: [response] });
         }
 
-        const { channel } = message.member.voice;
+        const { channel } = interaction.member.voice;
         if (!channel) {
             response = new MessageEmbed()
                 .setColor("RED")
                 .setDescription("You need to join a channel first good human");
-            return message.channel.send({ embeds: [response] });
+            return interaction.editReply({ embeds: [response] });
         }
         if (channel.id !== player.voiceChannel) {
             response = new MessageEmbed()
                 .setColor("RED")
                 .setDescription("Ming mong, you are not in the same voice channel as me");
-            return message.channel.send({ embeds: [response] });
+            return interaction.editReply({ embeds: [response] });
         }
 
         if (!player.queue.current) {
             let response = new MessageEmbed()
                 .setColor("RED")
                 .setDescription("Ming mong, there is no music playing.");
-            return message.channel.send({ embeds: [response] });
+            return interaction.editReply({ embeds: [response] });
         }
 
-        const emojishuffle = message.client.emoji.shuffle;
+        const emojishuffle = client.emoji.shuffle;
 
         try {
             //if no shuffle happened, return error
             if (!player.get(`beforeshuffle`)) {
-                return message.channel.send({
+                return interaction.editReply({
                     embeds: [new MessageEmbed()
                         .setColor('RED')
                         .setTitle(`ERROR |Have no shuffled this queue yet`)
@@ -62,7 +67,7 @@ module.exports = {
             //add old queue again
             for (const track of player.get(`beforeshuffle`))
                 player.queue.add(track);
-            return message.channel.send({
+            return interaction.editReply({
                 embeds: [new MessageEmbed()
                     .setTitle(`${emojishuffle} Sucesss | Unshuffled the queue`)
                     .setColor('#34eba1')]
@@ -70,7 +75,7 @@ module.exports = {
             )
         } catch (e) {
             console.log(String(e.stack).bgRed)
-            return message.channel.send({
+            return interaction.editReply({
                 embeds: [new MessageEmbed()
                     .setColor('RED')
                     .setTitle(`ERROR | An error occurred`)
@@ -79,4 +84,4 @@ module.exports = {
             );
         }
     }
-}
+};

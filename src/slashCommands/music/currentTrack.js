@@ -1,17 +1,22 @@
-const { MessageEmbed } = require('discord.js');
+const { MessageEmbed, CommandInteraction, Client } = require('discord.js');
 
 module.exports = {
-    name: 'nowplaying',
-    aliases: ['np', 'current'],
+    name: "nowplaying",
     description: "Show now playing music info",
-    args: false,
-    usage: "",
-    permission: [],
     owner: false,
     player: true,
     inVoiceChannel: false,
     sameVoiceChannel: false,
-    execute: async (message, args, client, prefix) => {
+    /**
+  * 
+  * @param {Client} client 
+  * @param {CommandInteraction} interaction 
+  */
+
+    run: async (client, interaction) => {
+        await interaction.deferReply({
+            ephemeral: false
+        })
         try {
             function format(millis) {
                 try {
@@ -38,18 +43,18 @@ module.exports = {
                 }
             }
 
-            const player = message.client.manager.get(message.guild.id);
+            const player = interaction.client.manager.get(interaction.guildId);
             if (!player.queue.current)
-                return message.channel.send({
+                return interaction.editReply({
                     embeds: [new MessageEmbed()
                         .setColor('RED')
                         .setTitle(`Error | There is nothing playing`)]
                 }
                 );
             //Send Now playing Message
-            return message.channel.send({
+            return interaction.editReply({
                 embeds: [new MessageEmbed()
-                    .setAuthor(`Current song playing:`, message.client.user.displayAvatarURL({
+                    .setAuthor(`Current song playing:`, client.user.displayAvatarURL({
                         dynamic: true
                     }))
                     .setThumbnail(`https://img.youtube.com/vi/${player.queue.current.identifier}/mqdefault.jpg`)
@@ -67,7 +72,7 @@ module.exports = {
             );
         } catch (e) {
             console.log(String(e.stack).bgRed)
-            return message.channel.send({
+            return interaction.editReply({
                 embeds: [new MessageEmbed()
                     .setColor('RED')
                     .setTitle(`ERROR | An error occurred`)
@@ -76,5 +81,4 @@ module.exports = {
             );
         }
     }
-
 }
