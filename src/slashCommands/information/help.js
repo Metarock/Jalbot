@@ -43,13 +43,14 @@ module.exports = {
                 information: "ℹ️",
                 // Kpop: "👑",
                 music: "🎵",
+                painquotes: "😈"
             }
 
 
             let ccate = [];
-            readdirSync("./commands/").forEach((dir) => {
+            readdirSync("./src/commands/").forEach((dir) => {
                 if (ignored.includes(dir.toLowerCase())) return;
-                const commands = readdirSync(`./commands/${dir}/`).filter((file) =>
+                const commands = readdirSync(`./src/commands/${dir}/`).filter((file) =>
                     file.endsWith(".js")
                 );
 
@@ -104,9 +105,9 @@ module.exports = {
 
                     let catts = [];
 
-                    readdirSync("./commands/").forEach((dir) => {
+                    readdirSync("./src/commands/").forEach((dir) => {
                         if (dir.toLowerCase() !== value.toLowerCase()) return;
-                        const commands = readdirSync(`./commands/${dir}/`).filter((file) =>
+                        const commands = readdirSync(`./src/commands/${dir}/`).filter((file) =>
                             file.endsWith(".js")
                         );
 
@@ -182,9 +183,9 @@ module.exports = {
         } else {
             let catts = [];
 
-            readdirSync("./commands/").forEach((dir) => {
+            readdirSync("./src/commands/").forEach((dir) => {
                 if (dir.toLowerCase() !== args[0].toLowerCase()) return;
-                const commands = readdirSync(`./commands/${dir}/`).filter((file) =>
+                const commands = readdirSync(`./src/commands/${dir}/`).filter((file) =>
                     file.endsWith(".js")
                 );
 
