@@ -5,7 +5,7 @@ const { Manager } = require('erela.js');
 const Spotify = require('erela.js-spotify');
 const Deezer = require('erela.js-deezer');
 const { readdirSync } = require('fs');
-
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = async (client) => {
 
@@ -123,8 +123,8 @@ module.exports = async (client) => {
     })
 
 
-    client.on("ready", async () => {
-        await client.application.commands.set(data).then(() => client.logger.log(`Client SlashCommand (/) Registered.`, "ready")).catch((e) => console.log(e));
-    });
+    // client.on("ready", async () => {
+    //     await client.application.commands.set(data).then(() => client.logger.log(`Client SlashCommand (/) Registered.`, "ready")).catch((e) => console.log(e));
+    // });
 
 }

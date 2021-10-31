@@ -35,6 +35,7 @@ const port = 3000 || 8000 || 5500;
 app.get('/', (req, res) => {
 	res.send('Jalbot is online');
 })
+
 module.exports = client;
 // Initiate the Manager with some options and listen to some events.
 client.commands = new Collection();
