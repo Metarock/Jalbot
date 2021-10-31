@@ -1,63 +1,78 @@
-const { MessageEmbed } = require("discord.js");
+const { CommandInteraction, Client, MessageEmbed } = require("discord.js");
 
 module.exports = {
     name: "skipto",
-    aliases: ["jump", "st", "next"],
-    description: "Skip to a specific track",
-    args: true,
-    usage: "",
-    permission: [],
+    description: "Forward song",
     owner: false,
     player: true,
     inVoiceChannel: true,
     sameVoiceChannel: true,
-    execute: async (message, args, client, prefix) => {
-        const player = client.manager.get(message.guild.id);
+    options: [
+        {
+            name: "number",
+            description: "select a song number",
+            required: true,
+            type: "NUMBER"
+        }
+    ],
+
+    /**
+     * @param {Client} client
+     * @param {CommandInteraction} interaction
+     */
+
+    run: async (client, interaction, prefix) => {
+        await interaction.deferReply({
+            ephemeral: false
+        });
+        const args = interaction.options.getNumber("number");
+        const player = interaction.client.manager.get(interaction.guildId);
+
         let response;
         if (!player) {
             response = new MessageEmbed()
                 .setColor("RED")
                 .setDescription("Ming mong, there is no player in this guild");
-            return message.channel.send({ embeds: [response] });
+            return await interaction.editReply({ embeds: [response] });
         }
 
-        const { channel } = message.member.voice;
+        const { channel } = interaction.member.voice;
         if (!channel) {
             response = new MessageEmbed()
                 .setColor("RED")
                 .setDescription("You need to join a channel first good human");
-            return message.channel.send({ embeds: [response] });
+            return await interaction.editReply({ embeds: [response] });
         }
         if (channel.id !== player.voiceChannel) {
             response = new MessageEmbed()
                 .setColor("RED")
                 .setDescription("Ming mong, you are not in the same voice channel as me");
-            return message.channel.send({ embeds: [response] });
+            return await interaction.editReply({ embeds: [response] });
         }
 
         if (!player.queue.current) {
             response = new MessageEmbed()
                 .setColor("RED")
                 .setDescription("Ming mong, there is no music playing.");
-            return message.channel.send({ embeds: [response] });
+            return await interaction.editReply({ embeds: [response] });
         }
 
-        const emojijump = message.client.emoji.jump;
+        const emojijump = client.emoji.jump;
 
         try {
             //if there are no args send error plus example
-            if (!args[0]) {
-                return message.channel.send({
+            if (!args) {
+                return await interaction.editReply({
                     embeds: [new MessageEmbed()
                         .setDescription(`Please include which track you want to jump. Example: \'?skipto ${player.queue.size - 2 <= 0 ? player.queue.size : player.queue.size - 2}\'`)
-                        .setColor(message.client.embedColor)
+                        .setColor(client.embedColor)
                         .setTimestamp()
                     ]
                 })
             }
 
             //if user input is not a Number
-            if (isNaN(args[0])) {
+            if (isNaN(args)) {
                 return message.channel.send({
                     embeds: [new MessageEmbed()
                         .setDescription(`You need to input a number`)
@@ -68,7 +83,7 @@ module.exports = {
             }
 
             //if wish track is bigger than the size
-            if (Number(args[0]) > player.queue.size) {
+            if (Number(args) > player.queue.size) {
                 return message.channel.send({
                     embeds: [new MessageEmbed()
                         .setDescription(`That song is not in the queue, sorry.....`)
@@ -79,13 +94,13 @@ module.exports = {
             }
 
             //remove all tracks to the jumped song
-            player.queue.remove(0, Number(args[0]) - 1);
+            player.queue.remove(0, Number(args) - 1);
 
             //stop the player
             player.stop()
             return message.channel.send({
                 embeds: [new MessageEmbed()
-                    .setDescription(`${emojijump}Jumped to the: ${Number(args[0])}`)
+                    .setDescription(`${emojijump}Jumped to the: ${Number(args)}`)
                     .setColor(message.client.embedColor)
                     .setTimestamp()
                 ]
@@ -99,5 +114,6 @@ module.exports = {
                 ]
             })
         }
+
     }
-}
+};

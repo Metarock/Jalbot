@@ -39,6 +39,7 @@ module.exports = client;
 // Initiate the Manager with some options and listen to some events.
 client.commands = new Collection();
 //Add slashcommands here
+client.slashCommands = new Collection();
 client.owner = process.env.ownerID;
 client.prefix = process.env.prefix;
 client.embedColor = process.env.embedColor;

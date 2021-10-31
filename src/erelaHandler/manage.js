@@ -103,10 +103,28 @@ module.exports = async (client) => {
     })
 
     //TODO: IMPORT THE SLASH COMMANDS LATER
+    const data = [];
+
+    readdirSync("./src/slashCommands/").forEach((dir) => {
+        const slashCommandFile = readdirSync(`./src/slashCommands/${dir}/`).filter((files) => files.endsWith(".js"));
+
+        for (const file of slashCommandFile) {
+            const slashCommand = require(`../slashCommands/${dir}/${file}`)
+
+            if (!slashCommand.name) return console.log(`slashCommandNameError: ${slashCommand.split(".")[0]} application command name is required`)
+
+            if (!slashCommand.description) return console.error(`slashCommandDescriptionError: ${slashCommand.split(".")[0]} application command description is required.`);
+
+            client.slashCommands.set(slashCommand.name, slashCommand);
+            client.logger.log(`Client SlashCommands Command (/) Loaded: ${slashCommand.name}`, "cmd");
+            data.push(slashCommand);
+
+        }
+    })
 
 
-    // client.on("ready", async () => {
-    //     await client.application.commands.set(data).then(() => client.logger.log(`Client SlashCommand (/) Registered.`, "ready")).catch((e) => console.log(e));
-    // });
+    client.on("ready", async () => {
+        await client.application.commands.set(data).then(() => client.logger.log(`Client SlashCommand (/) Registered.`, "ready")).catch((e) => console.log(e));
+    });
 
 }

@@ -1,68 +1,81 @@
-const { MessageEmbed } = require("discord.js");
+const { CommandInteraction, Client, MessageEmbed } = require("discord.js");
 
 module.exports = {
     name: "remove",
-    aliases: ["rm"],
-    category: "Music",
-    description: "remove song from the queue",
-    args: true,
-    usage: "<Number of song in queue>",
-    permission: [],
+    description: "Remove song from the queue",
     owner: false,
     player: true,
     inVoiceChannel: true,
     sameVoiceChannel: true,
-    execute: async (message, args, client, prefix) => {
-        const player = client.manager.get(message.guild.id);
+    options: [
+        {
+            name: "number",
+            description: "Number of song in queue",
+            required: true,
+            type: "NUMBER"
+        }
+    ],
+
+    /**
+     * @param {Client} client
+     * @param {CommandInteraction} interaction
+     */
+
+    run: async (client, interaction, prefix) => {
+        await interaction.deferReply({
+            ephemeral: false
+        });
+        const args = interaction.options.getNumber("number");
+        const player = interaction.client.manager.get(interaction.guildId);
+
         let response;
         if (!player) {
             response = new MessageEmbed()
                 .setColor("RED")
                 .setDescription("Ming mong, there is no player in this guild");
-            return message.channel.send({ embeds: [response] });
+            return await interaction.editReply({ embeds: [response] });
         }
 
-        const { channel } = message.member.voice;
+        const { channel } = interaction.member.voice;
         if (!channel) {
             response = new MessageEmbed()
                 .setColor("RED")
                 .setDescription("You need to join a channel first good human");
-            return message.channel.send({ embeds: [response] });
+            return await interaction.editReply({ embeds: [response] });
         }
         if (channel.id !== player.voiceChannel) {
             response = new MessageEmbed()
                 .setColor("RED")
                 .setDescription("Ming mong, you are not in the same voice channel as me");
-            return message.channel.send({ embeds: [response] });
+            return await interaction.editReply({ embeds: [response] });
         }
-
 
         if (!player.queue.current) {
             let thing = new MessageEmbed()
                 .setColor("RED")
                 .setDescription("Ming mong, there is no music playing.");
-            return message.channel.send({ embeds: [thing] });
+            return await interaction.editReply({ embeds: [thing] });
         }
 
-
-        const position = (Number(args[0]) - 1);
+        const position = (Number(args) - 1);
         if (position > player.queue.size) {
             const number = (position + 1);
             let thing = new MessageEmbed()
                 .setColor("RED")
                 .setDescription(`No songs at number ${number}.\nTotal Songs: ${player.queue.size}`);
-            return message.channel.send({ embeds: [thing] });
+            return await interaction.editReply({ embeds: [thing] });
         }
 
         const song = player.queue[position]
         player.queue.remove(position);
 
-        const emojieject = message.client.emoji.remove;
+        const emojieject = client.emoji.remove;
 
         let thing = new MessageEmbed()
-            .setColor(message.client.embedColor)
+            .setColor(client.embedColor)
             .setTimestamp()
             .setDescription(`${emojieject} Removed\n[${song.title}](${song.uri})`)
-        return message.channel.send({ embeds: [thing] });
+        return await interaction.editReply({ embeds: [thing] });
+
     }
-}
+};
