@@ -63,8 +63,6 @@ module.exports = {
             return await interaction.editReply({ embeds: [response] });
         }
 
-        const emojivolume = client.emoji.volumehigh;
-
         if (!args.length) {
             response = new MessageEmbed()
                 .setColor(client.embedColor)
