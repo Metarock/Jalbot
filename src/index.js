@@ -44,12 +44,10 @@ client.slashCommands = new Collection();
 client.owner = process.env.ownerID;
 client.prefix = process.env.prefix;
 client.embedColor = process.env.embedColor;
-client.alises = new Collection();
-client.categoires = readdirSync('./src/commands/')
+client.aliases = new Collection();
+client.categories = readdirSync('./src/commands/')
 client.logger = require("./utils/logger.js");
 client.emoji = require("./utils/emoji.json");
 require('./erelaHandler/manage')(client);
-
-
 
 client.login(process.env.token)
