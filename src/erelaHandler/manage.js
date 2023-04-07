@@ -25,6 +25,7 @@ module.exports = async (client) => {
                 host: process.env.lavalink_host, // Optional if Lavalink is local
                 port: parseInt(process.env.lavalink_port), // Optional if Lavalink is set to default
                 password: process.env.lavalink_password, // Optional if Lavalink is set to default
+                secure: Boolean(process.env.lavalink_secure),
             },
         ],
         // A send method to send data to the Discord WebSocket using your library.
